@@ -1,0 +1,3 @@
+## frappuccino
+
+FRP Events on top of Backbone.js? This is what this thing is gonna be...
