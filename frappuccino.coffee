@@ -13,7 +13,7 @@ class Backbone.EventStream extends Backbone.Event
     
   map: (func) ->
     pusher = new Backbone.Event()
-    this.hook((value) -> pusher.trigger('push', func(value))
+    this.hook((value) -> pusher.trigger('push', func(value)))
     
     new Backbone.EventStream(pusher, 'push')
     
