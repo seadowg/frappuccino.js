@@ -3,10 +3,7 @@ class Backbone.EventStream extends Backbone.Event
     @origin = origin
     @event = event
     
-    @origin.bind(@event, (value) => this.occur(value))
-  
-  occur: (value) ->
-    this.trigger('occur', value)
+    @origin.bind(@event, (value) => this.trigger('occur', value))
     
   hook: (func) ->
     this.bind('occur', (value) -> func(value))
