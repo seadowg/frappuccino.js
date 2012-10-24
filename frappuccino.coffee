@@ -1,4 +1,4 @@
-Frappuccino = {}
+window.Frappuccino = {}
 
 class Frappuccino.Event extends Backbone.Event
   constructor: (origin, event) ->
