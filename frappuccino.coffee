@@ -1,7 +1,14 @@
 window.Frappuccino = {}
 
-class Frappuccino.Event extends Backbone.Event
+Frappuccino.Helpers =
+  new_backbone_event: () ->
+    event = {}
+    _.extend(event, Backbone.Events)
+    event
+
+class Frappuccino.Event
   constructor: (origin, event) ->
+    _.extend(this, Backbone.Events)
     @origin = origin
     @event = event
     
@@ -23,13 +30,13 @@ class Frappuccino.Event extends Backbone.Event
     this.off()
     
   map: (func) ->
-    pusher = new Backbone.Event()
+    pusher = Frappuccino.Helpers.new_backbone_event()
     this.hook((value) -> pusher.trigger('push', func(value)))
     
     new Frappuccino.Event(pusher, 'push')
     
   filter: (func) ->
-    pusher = new Backbone.Event()
+    pusher = Frappuccino.Helpers.new_backbone_event()
     this.hook((value) -> 
       if func(value)
         pusher.trigger('push', value)
@@ -38,25 +45,38 @@ class Frappuccino.Event extends Backbone.Event
     new Frappuccino.Event(pusher, 'push')
     
   merge: (event) ->
-    pusher = new Backbone.Event()
+    pusher = Frappuccino.Helpers.new_backbone_event()
     this.hook((value) -> pusher.trigger('push', value))
     event.hook((value) -> pusher.trigger('push', value))
     
     new Frappuccino.Event(pusher, 'push')
     
   replicate: () ->
-    pusher = new Backbone.Event()
+    pusher = Frappuccino.Helpers.new_backbone_event()
     this.hook((value) -> pusher.trigger('push', value))
     
     new Frappuccino.Event(pusher, 'push')
     
+class Frappuccino.Model extends Backbone.Model
+  event: (name) ->
+    new Frappuccino.Event(this, name)
+    
+class Frappuccino.Collection extends Backbone.Collection
+  event: (name) ->
+    new Frappuccino.Event(this, name)
+       
 class Frappuccino.View extends Backbone.View
   subscriptions: []
   
   subscribe: (event, func) ->
     replicant = event.replicate()
-    replicant.hook(func)
-    subscriptions.push(replicant)
+    
+    if func
+      replicant.hook(func)
+    else
+      replicant.hook(this.render)
+      
+    this.subscriptions.push(replicant)
     
     replicant
     
