@@ -68,6 +68,9 @@ class Frappuccino.Collection extends Backbone.Collection
 class Frappuccino.View extends Backbone.View
   subscriptions: []
   
+  event: (name) ->
+    new Frappuccino.Event(this, name)
+  
   subscribe: (event, func) ->
     replicant = event.replicate()
     
