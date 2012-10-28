@@ -94,6 +94,7 @@ class Frappuccino.View extends Backbone.View
       @el.html(src)
     
     this.postRender() if this.postRender
+    this
     
   cleanup: () ->
     subscription.cleanup() for subscription in subscriptions
