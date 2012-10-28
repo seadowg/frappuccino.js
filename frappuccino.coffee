@@ -70,6 +70,9 @@ class Frappuccino.View extends Backbone.View
   
   event: (name) ->
     new Frappuccino.Event(this, name)
+    
+  data: () ->
+    {}
   
   subscribe: (event, func) ->
     replicant = event.replicate()
@@ -82,6 +85,15 @@ class Frappuccino.View extends Backbone.View
     this.subscriptions.push(replicant)
     
     replicant
+    
+  render: () ->
+    this.preRender() if this.preRender 
+    
+    if @template
+      src = HandlebarsTemplates[@template](this.data())
+      @el.html(src)
+    
+    this.postRender() if this.postRender
     
   cleanup: () ->
     subscription.cleanup() for subscription in subscriptions
