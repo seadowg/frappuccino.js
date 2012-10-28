@@ -1,4 +1,4 @@
-# frappuccino
+# Frappuccino
 
 ![](http://f.cl.ly/items/0u1z0w3P2c3v0f3y472j/frap.jpg)
 
