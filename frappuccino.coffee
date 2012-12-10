@@ -16,18 +16,19 @@ class Frappuccino.Event
     @origin.bind('cleanup', this.cleanup)
 
   hook: (func) ->
-    this.bind('occur', (value) -> func(value))
+    callback = (value) -> func(value)
+    this.bind('occur', callback, this)
 
   occur: (value) =>
     this.trigger('occur', value)
 
   cleanup: () =>
-    @origin.off(@event, this.occur)
-    @origin.off('cleanup', this.cleanup)
+    @origin.unbind(@event, this.occur, this)
+    @origin.unbind('cleanup', this.cleanup, this)
     delete @origin
-
+    
     this.trigger('cleanup')
-    this.off()
+    this.unbind(null, null, this)
 
   map: (func) ->
     pusher = Frappuccino.Helpers.new_backbone_event()
