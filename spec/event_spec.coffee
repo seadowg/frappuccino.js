@@ -72,4 +72,16 @@ describe('Frappuccino.Event', ->
     #  expect(event.cleanup).toHaveBeenCalled()
     #)
   )
+  
+  describe('#map', ->
+    it('creates an event that occurs with a mapped value of the original', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')
+      mapped = event.map((value) -> value.length)  
+      spyOn(mapped, 'trigger')
+      event.trigger('occur', 'hello')
+    
+      expect(mapped.trigger).toHaveBeenCalledWith('occur', 5)
+    )
+  )
 )

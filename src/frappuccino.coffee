@@ -5,6 +5,26 @@ Frappuccino.Helpers =
     event = {}
     _.extend(event, Backbone.Events)
     event
+    
+class Frappuccino.Pusher
+  constructor: (event) ->
+    _.extend(this, Backbone.Events)
+    @event = event  
+    
+  finalize: () ->
+    this.listenTo(@event, 'occur', this.push)
+    this.listenTo(@event, 'cleanup', this.cleanup)
+    
+    this
+  
+  push: () -> null
+  
+  cleanup: () => 
+    this.stopListening()
+    delete @event
+    
+    this.trigger('cleanup')
+    this.unbind(null, null, this)
 
 class Frappuccino.Event
   constructor: (origin, event) ->
@@ -23,40 +43,38 @@ class Frappuccino.Event
     this.trigger('occur', value)
 
   cleanup: () =>
-    this.stopListening(@origin, @event, this.occur)
-    this.stopListening(@origin, 'cleanup', this.cleanup)
+    this.stopListening()
     delete @origin
     
     this.trigger('cleanup')
     this.unbind(null, null, this)
 
   map: (func) ->
-    pusher = Frappuccino.Helpers.new_backbone_event()
-    this.hook((value) -> pusher.trigger('push', func(value)))
+    pusher = new Frappuccino.Pusher(this)
+    pusher.push = (value) -> pusher.trigger('push', func(value))
 
-    new Frappuccino.Event(pusher, 'push')
+    new Frappuccino.Event(pusher.finalize(), 'push')
 
   filter: (func) ->
-    pusher = Frappuccino.Helpers.new_backbone_event()
-    this.hook((value) ->
+    pusher = new Frappuccino.Pusher(this)
+    pusher.push = (value) ->
       if func(value)
         pusher.trigger('push', value)
-    )
 
-    new Frappuccino.Event(pusher, 'push')
+    new Frappuccino.Event(pusher.finalize(), 'push')
 
   merge: (event) ->
-    pusher = Frappuccino.Helpers.new_backbone_event()
-    this.hook((value) -> pusher.trigger('push', value))
-    event.hook((value) -> pusher.trigger('push', value))
-
-    new Frappuccino.Event(pusher, 'push')
+    pusher = new Frappuccino.Pusher(this)
+    pusher.listenTo(event, 'occur', pusher.push)
+    pusher.push = (value) -> pusher.trigger('push', value)
+    
+    new Frappuccino.Event(pusher.finalize(), 'push')
 
   replicate: () ->
-    pusher = Frappuccino.Helpers.new_backbone_event()
+    pusher = new Frappuccino.Pusher(this)
     this.hook((value) -> pusher.trigger('push', value))
 
-    new Frappuccino.Event(pusher, 'push')
+    new Frappuccino.Event(pusher.finalize(), 'push')
 
 class Frappuccino.Model extends Backbone.Model
   event: (name) ->
