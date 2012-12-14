@@ -24,7 +24,7 @@ class Frappuccino.Event
 
   cleanup: () =>
     this.stopListening(@origin, @event, this.occur)
-    @origin.unbind('cleanup', this.cleanup, this)
+    this.stopListening(@origin, 'cleanup', this.cleanup)
     delete @origin
     
     this.trigger('cleanup')
