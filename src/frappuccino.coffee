@@ -12,8 +12,8 @@ class Frappuccino.Event
     @origin = origin
     @event = event
 
-    @origin.bind(@event, this.occur)
-    @origin.bind('cleanup', this.cleanup)
+    this.listenTo(@origin, @event, this.occur)
+    this.listenTo(@origin, 'cleanup', this.cleanup)
 
   hook: (func) ->
     callback = (value) -> func(value)
@@ -23,7 +23,7 @@ class Frappuccino.Event
     this.trigger('occur', value)
 
   cleanup: () =>
-    @origin.unbind(@event, this.occur, this)
+    this.stopListening(@origin, @event, this.occur)
     @origin.unbind('cleanup', this.cleanup, this)
     delete @origin
     

@@ -30,4 +30,46 @@ describe('Frappuccino.Event', ->
       expect(event.trigger).toHaveBeenCalledWith('occur', 'hello')
     )
   )
+  
+  describe('#cleanup', ->
+    it('stops the event occuring when the origin event does', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')
+      spyOn(event, 'trigger')
+      event.cleanup()
+      bb_event.trigger('hello', 11)
+      
+      expect(event.trigger).not.toHaveBeenCalledWith('occur', 11)
+    )
+    
+    it('unbinds all the event\'s callbacks', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')
+      callback = jasmine.createSpy()
+      event.bind('occur', callback, event)
+      event.cleanup()
+      event.trigger('occur')
+      
+      expect(callback).not.toHaveBeenCalled()
+    )
+    
+    it('triggers cleanup', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')
+      spyOn(event, 'trigger')
+      event.cleanup()
+      
+      expect(event.trigger).toHaveBeenCalledWith('cleanup')
+    )
+    
+    # WAT!?
+    #it('is automatically called when the origin event triggers cleanup', ->
+    #  bb_event = Frappuccino.Helpers.new_backbone_event()
+    #  event = new Frappuccino.Event(bb_event, 'hello')     
+    #  spyOn(event, 'cleanup')
+    #  bb_event.trigger('cleanup')
+    #  
+    #  expect(event.cleanup).toHaveBeenCalled()
+    #)
+  )
 )
