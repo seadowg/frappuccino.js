@@ -8,4 +8,4 @@ Features:
 
 - First class, composeable events
 - Event disposal
-- Enhanced views with safe event subscriptions and templating magic
+- Enhanced views with safe IoC style event subscriptions and templating magic
