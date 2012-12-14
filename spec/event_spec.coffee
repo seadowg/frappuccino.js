@@ -62,15 +62,14 @@ describe('Frappuccino.Event', ->
       expect(event.trigger).toHaveBeenCalledWith('cleanup')
     )
     
-    # WAT!?
-    #it('is automatically called when the origin event triggers cleanup', ->
-    #  bb_event = Frappuccino.Helpers.new_backbone_event()
-    #  event = new Frappuccino.Event(bb_event, 'hello')     
-    #  spyOn(event, 'cleanup')
-    #  bb_event.trigger('cleanup')
-    #  
-    #  expect(event.cleanup).toHaveBeenCalled()
-    #)
+    it('is automatically called when the origin event triggers cleanup', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')     
+      spyOn(event, 'trigger')
+      bb_event.trigger('cleanup')
+      
+      expect(event.trigger).toHaveBeenCalledWith('cleanup')
+    )
   )
   
   describe('#map', ->
