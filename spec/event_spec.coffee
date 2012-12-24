@@ -73,7 +73,7 @@ describe('Frappuccino.Event', ->
   )
   
   describe('#map', ->
-    it('creates an event that occurs with a mapped value of the original', ->
+    it('returns an event that occurs with a mapped value of the original', ->
       bb_event = Frappuccino.Helpers.new_backbone_event()
       event = new Frappuccino.Event(bb_event, 'hello')
       mapped = event.map((value) -> value.length)  
@@ -81,6 +81,37 @@ describe('Frappuccino.Event', ->
       event.trigger('occur', 'hello')
     
       expect(mapped.trigger).toHaveBeenCalledWith('occur', 5)
+    )
+  )
+  
+  describe('#filter', ->
+    it('returns an event that occurs with the correct value if the origin occurrence passes the filter', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event = new Frappuccino.Event(bb_event, 'hello')
+      filtered = event.filter((value) -> value >= 1)
+      spyOn(filtered, 'trigger')
+      
+      event.trigger('occur', 0)
+      expect(filtered.trigger).not.toHaveBeenCalledWith('occur', 0)
+      
+      event.trigger('occur', 1)
+      expect(filtered.trigger).toHaveBeenCalledWith('occur', 1)
+    )
+  )
+  
+  describe('#merge', ->
+    it('returns an event that occurs when either of the origin events occur', ->
+      bb_event = Frappuccino.Helpers.new_backbone_event()
+      event1 = new Frappuccino.Event(bb_event, 'hello')
+      event2 = new Frappuccino.Event(bb_event, 'hello_again')
+      merged = event1.merge(event2)
+      spyOn(merged, 'trigger')
+      
+      event1.trigger('occur', 1)
+      event2.trigger('occur', 2)
+      
+      expect(merged.trigger).toHaveBeenCalledWith('occur', 1)
+      expect(merged.trigger).toHaveBeenCalledWith('occur', 2)
     )
   )
 )

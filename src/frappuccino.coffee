@@ -65,14 +65,15 @@ class Frappuccino.Event
 
   merge: (event) ->
     pusher = new Frappuccino.Pusher(this)
-    pusher.listenTo(event, 'occur', pusher.push)
     pusher.push = (value) -> pusher.trigger('push', value)
+    pusher.finalize()
+    pusher.listenTo(event, 'occur', pusher.push)
     
-    new Frappuccino.Event(pusher.finalize(), 'push')
+    new Frappuccino.Event(pusher, 'push')
 
   replicate: () ->
     pusher = new Frappuccino.Pusher(this)
-    this.hook((value) -> pusher.trigger('push', value))
+    pusher.push = (value) -> pusher.trigger('push', value)
 
     new Frappuccino.Event(pusher.finalize(), 'push')
 
